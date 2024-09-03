@@ -4,6 +4,7 @@ import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.SimpleTask;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,16 +20,18 @@ import java.util.concurrent.CompletableFuture;
  */
 @Slf4j
 @Service
-public class SimpleWorkflow {
+public class SimpleWorkflow implements IWorkflow {
     @Autowired
     private ApiClient apiClient;
-    private String workflowName = "simple-calculator-workflow";
+    @Getter
+    private String name = "simple-calculator-workflow";
+    @Getter
     private int version = 1;
 
-    @PostConstruct
-    public void createWorkflow() {
+    @Override
+    public boolean createWorkflow() {
         //创建工作流
-        FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(workflowName, version)
+        FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
                 .add(new SimpleTask("add", "addRef")
                         .input("a", "${workflow.input.a}")
                         .input("b", "${workflow.input.b}"))
@@ -44,23 +47,16 @@ public class SimpleWorkflow {
                 .build();
         //注册工作流定义
         log.info("Register the '{}' workflow definition, result:{}", workflow.getName(), workflow.registerWorkflow());
-        run();
+        return workflow.registerWorkflow();
     }
 
-    public void run() {
-        boolean published = apiClient.getWorkflowDefClient().publishWorkflowDef(workflowName, version, false);
+    @Override
+    public CompletableFuture<ExecutingWorkflow> run() {
+        boolean published = apiClient.getWorkflowDefClient().publishWorkflowDef(name, version, false);
         log.info("发布工作流：{}", published);
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("a", 100);
         dataMap.put("b", 200);
-        try {
-            CompletableFuture<ExecutingWorkflow> future = apiClient.getWorkflowExecutor().executeWorkflow(workflowName, version, dataMap);
-            future.thenAccept((w) -> {
-                System.out.println("workflowName: " + w.getWorkflowName() + ", workflowId: " + w.getWorkflowId());
-            }).join();
-            System.out.println("done");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        return apiClient.getWorkflowExecutor().executeWorkflow(name, version, dataMap);
     }
 }
