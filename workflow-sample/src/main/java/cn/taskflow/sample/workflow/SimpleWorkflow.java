@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Slf4j
 @Service
-public class SimpleWorkflow implements IWorkflow {
+public class SimpleWorkflow implements CustomWorkflow {
     @Autowired
     private ApiClient apiClient;
     @Getter
@@ -29,8 +28,7 @@ public class SimpleWorkflow implements IWorkflow {
     private int version = 1;
 
     @Override
-    public boolean createWorkflow() {
-        //创建工作流
+    public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
                 .add(new SimpleTask("add", "addRef")
                         .input("a", "${workflow.input.a}")
@@ -45,15 +43,11 @@ public class SimpleWorkflow implements IWorkflow {
                         .input("a", "${multiplyRef.output.result}")
                         .input("b", "2"))
                 .build();
-        //注册工作流定义
-        log.info("Register the '{}' workflow definition, result:{}", workflow.getName(), workflow.registerWorkflow());
-        return workflow.registerWorkflow();
+        return workflow.registerWorkflow(true, true);
     }
 
     @Override
     public CompletableFuture<ExecutingWorkflow> run() {
-        boolean published = apiClient.getWorkflowDefClient().publishWorkflowDef(name, version, false);
-        log.info("发布工作流：{}", published);
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("a", 100);
         dataMap.put("b", 200);

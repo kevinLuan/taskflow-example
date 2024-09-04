@@ -5,18 +5,30 @@ import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * 自定义工作流
+ *
  * @author SHOUSHEN.LUAN
  * @since 2024-09-03
  */
-public interface IWorkflow {
+public interface CustomWorkflow {
+    /**
+     * 获取自定义工作流名称
+     *
+     * @return
+     */
     String getName();
 
+    /**
+     * 获取自定义工作流版本
+     *
+     * @return
+     */
     int getVersion();
 
     /**
-     * 创建工作流定义
+     * 注册工作流定义
      */
-    boolean createWorkflow();
+    boolean register();
 
     /**
      * 运行工作流
