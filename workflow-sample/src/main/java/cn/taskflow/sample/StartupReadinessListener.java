@@ -1,7 +1,7 @@
 package cn.taskflow.sample;
 
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
-import cn.feiliu.taskflow.sdk.workflow.def.ValidationError;
+import cn.feiliu.taskflow.sdk.workflow.def.ValidationException;
 import cn.taskflow.sample.workflow.CustomWorkflow;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class StartupReadinessListener implements ApplicationListener<Application
                 } else {
                     throw new IllegalStateException("注册工作流失败,name:" + name);
                 }
-            }catch (ValidationError e){
+            }catch (ValidationException e){
                 log.error("-----------------------------------");
                 log.error("Workflow register error, name: `{}`", workflow.getName());
                 for (String error : e.getErrors()) {
