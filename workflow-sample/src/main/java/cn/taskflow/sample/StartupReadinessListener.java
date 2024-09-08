@@ -40,17 +40,15 @@ public class StartupReadinessListener implements ApplicationListener<Application
         List<CompletableFuture<ExecutingWorkflow>> futures = new ArrayList<>();
         log.info("====================RunWorkflow====================");
         for (CustomWorkflow workflow : workflows) {
-            if (workflow.getName().equals("simple-do-while-workflow")) {
-                log.info("Workflow run start: {}", workflow.getName());
-                CompletableFuture<ExecutingWorkflow> future = workflow.run();
-                futures.add(future.whenComplete((r, e) -> {
-                    if (r != null) {
-                        log.info("Workflow execution done, name: `{}` workflowId: {}", workflow.getName(), r.getWorkflowId());
-                    } else {
-                        log.error("Workflow execution error, name: `{}` error:{}", workflow.getName(), e);
-                    }
-                }));
-            }
+            log.info("Workflow run start: {}", workflow.getName());
+            CompletableFuture<ExecutingWorkflow> future = workflow.run();
+            futures.add(future.whenComplete((r, e) -> {
+                if (r != null) {
+                    log.info("Workflow execution done, name: `{}` workflowId: {}", workflow.getName(), r.getWorkflowId());
+                } else {
+                    log.error("Workflow execution error, name: `{}` error:{}", workflow.getName(), e);
+                }
+            }));
         }
         log.info("====================RunWorkflow Done====================");
         return futures;
@@ -73,7 +71,7 @@ public class StartupReadinessListener implements ApplicationListener<Application
                 } else {
                     throw new IllegalStateException("注册工作流失败,name:" + name);
                 }
-            }catch (ValidationException e){
+            } catch (ValidationException e) {
                 log.error("-----------------------------------");
                 log.error("Workflow register error, name: `{}`", workflow.getName());
                 for (String error : e.getErrors()) {

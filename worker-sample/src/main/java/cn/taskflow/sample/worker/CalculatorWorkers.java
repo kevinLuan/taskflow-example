@@ -1,6 +1,6 @@
 package cn.taskflow.sample.worker;
 
-import cn.feiliu.taskflow.client.spring.SpringWorkers;
+import cn.feiliu.taskflow.client.spring.TaskflowWorkers;
 import cn.feiliu.taskflow.sdk.workflow.task.InputParam;
 import cn.feiliu.taskflow.sdk.workflow.task.OutputParam;
 import cn.feiliu.taskflow.sdk.workflow.task.WorkerTask;
@@ -9,7 +9,7 @@ import cn.feiliu.taskflow.sdk.workflow.task.WorkerTask;
  * @author SHOUSHEN.LUAN
  * @since 2024-09-01
  */
-@SpringWorkers
+@TaskflowWorkers
 public class CalculatorWorkers {
     /**
      * 加法方法

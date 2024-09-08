@@ -26,7 +26,6 @@ public class ForkForWorkflow implements CustomWorkflow {
     private String name = "simple-fork-for-workflow";
     @Getter
     private int version = 1;
-
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
