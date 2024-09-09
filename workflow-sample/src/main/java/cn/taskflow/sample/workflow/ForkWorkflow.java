@@ -3,10 +3,9 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
-import cn.feiliu.taskflow.sdk.workflow.def.tasks.DoWhile;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.ForkJoin;
-import cn.feiliu.taskflow.sdk.workflow.def.tasks.SimpleTask;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.Task;
+import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,22 +47,22 @@ public class ForkWorkflow implements CustomWorkflow {
     public boolean register() {
         Task[][] tasks = new Task[3][];
         tasks[0] = new Task[]{
-                new SimpleTask("add", "addRef")
+                new WorkTask("add", "addRef")
                         .input("a", "${workflow.input.a}")
                         .input("b", "${workflow.input.b}"),
-                new SimpleTask("subtract", "subtractRef")
+                new WorkTask("subtract", "subtractRef")
                         .input("a", "${workflow.input.a}")
                         .input("b", "${workflow.input.b}")
         };
         tasks[1] = new Task[]{
-                new SimpleTask("multiply", "multiplyRef")
+                new WorkTask("multiply", "multiplyRef")
                         .input("a", "${workflow.input.a}")
                         .input("b", "${workflow.input.b}"),
-                new SimpleTask("divide", "divideRef")
+                new WorkTask("divide", "divideRef")
                         .input("a", "${workflow.input.a}")
                         .input("b", "${workflow.input.b}")
         };
-        tasks[2] = new Task[]{new SimpleTask("echo", "echoRef")
+        tasks[2] = new Task[]{new WorkTask("echo", "echoRef")
                 .input("value", "${workflow.input.msg}")};
 
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)

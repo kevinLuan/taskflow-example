@@ -3,8 +3,10 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
+import cn.feiliu.taskflow.expression.Expr;
+import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.DoWhile;
-import cn.feiliu.taskflow.sdk.workflow.def.tasks.SimpleTask;
+import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,40 +30,40 @@ public class DoWhileWorkflow implements CustomWorkflow {
 
     @Override
     public boolean register() {
-        FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
-                .add(new SimpleTask("add", "addRef")
-                        .input("a", "${workflow.input.a}")
-                        .input("b", "${workflow.input.b}"))
+        FeiLiuWorkflow<Map<String, Object>> feiLiuWorkflow = apiClient.newWorkflowBuilder(name, version)
+                .add(new WorkTask("add", "addRef")
+                        .input(Pair.of("a").fromWorkflow("numA"))
+                        .input(Pair.of("b").fromWorkflow("numB")))
                 .add(new DoWhile("doWhile1Ref", 1)
                         .loopOver(
-                                new SimpleTask("subtract", "subtract1Ref")
-                                        .input("a", "${addRef.output.sum}")
-                                        .input("b", "${addRef.output.sum}"),
-                                new SimpleTask("multiply", "multiply1Ref")
-                                        .input("a", "${addRef.output.sum}")
-                                        .input("b", "${addRef.output.sum}")
+                                new WorkTask("subtract", "subtract1Ref")
+                                        .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
+                                        .input("b", 1),
+                                new WorkTask("multiply", "multiply1Ref")
+                                        .input(Pair.of("a").fromTaskOutput("subtract1Ref", "result"))
+                                        .input("b", 2)
                         ))
-                .add(new DoWhile("doWhile2Ref", "${workflow.input.loopCount}")
+                .add(new DoWhile("doWhile2Ref", Expr.workflow("loopCount"))
                         .loopOver(
-                                new SimpleTask("subtract", "subtract2Ref")
-                                        .input("a", "${workflow.input.a}")
-                                        .input("b", "${workflow.input.a}"),
-                                new SimpleTask("multiply", "multiply2Ref")
-                                        .input("a", "${workflow.input.b}")
-                                        .input("b", "${workflow.input.b}")
+                                new WorkTask("subtract", "subtract2Ref")
+                                        .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
+                                        .input(Pair.of("b").fromWorkflow("numB")),
+                                new WorkTask("multiply", "multiply2Ref")
+                                        .input(Pair.of("a").fromTaskOutput("subtract2Ref", "result"))
+                                        .input("b", 2)
                         ))
-                .add(new SimpleTask("divide", "divideRef")
-                        .input("a", "${addRef.output.sum}")
+                .add(new WorkTask("divide", "divideRef")
+                        .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
                         .input("b", "2")
                 ).build();
-        return workflow.registerWorkflow(true, true);
+        return feiLiuWorkflow.registerWorkflow(true, true);
     }
 
     @Override
     public CompletableFuture<ExecutingWorkflow> run() {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("a", 100);
-        dataMap.put("b", 200);
+        dataMap.put("numA", 100);
+        dataMap.put("numB", 200);
         dataMap.put("loopCount", 3);
         return apiClient.getWorkflowExecutor().executeWorkflow(name, version, dataMap);
     }

@@ -4,7 +4,7 @@ import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.ForkFor;
-import cn.feiliu.taskflow.sdk.workflow.def.tasks.SimpleTask;
+import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +29,18 @@ public class ForkForWorkflow implements CustomWorkflow {
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
-                .add(new SimpleTask("add", "addRef")
+                .add(new WorkTask("add", "addRef")
                         .input("a", "${workflow.input.a}")
                         .input("b", "${workflow.input.b}"))
                 .add(new ForkFor("forRef", "${workflow.input.elements}")
                         .loopOver(
-                                new SimpleTask("subtract", "subtractRef")
+                                new WorkTask("subtract", "subtractRef")
                                         .input("a", "${forRef.output.element}")
                                         .input("b", "${forRef.output.index}"),
-                                new SimpleTask("multiply", "multiplyRef")
+                                new WorkTask("multiply", "multiplyRef")
                                         .input("a", "${addRef.output.sum}")
                                         .input("b", "${subtractRef.output.result}")
-                        )).add(new SimpleTask("divide", "divideRef")
+                        )).add(new WorkTask("divide", "divideRef")
                         .input("a", "${addRef.output.sum}")
                         .input("b", "2")
                 ).build();

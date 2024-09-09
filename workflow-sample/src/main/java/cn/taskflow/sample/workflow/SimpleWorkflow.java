@@ -3,7 +3,7 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
-import cn.feiliu.taskflow.sdk.workflow.def.tasks.SimpleTask;
+import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +30,16 @@ public class SimpleWorkflow implements CustomWorkflow {
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
-                .add(new SimpleTask("add", "addRef")
+                .add(new WorkTask("add", "addRef")
                         .input("a", "${workflow.input.a}")
                         .input("b", "${workflow.input.b}"))
-                .add(new SimpleTask("subtract", "subtractRef")
+                .add(new WorkTask("subtract", "subtractRef")
                         .input("a", "${addRef.output.sum}")
                         .input("b", 10))
-                .add(new SimpleTask("multiply", "multiplyRef")
+                .add(new WorkTask("multiply", "multiplyRef")
                         .input("a", "${addRef.output.sum}")
                         .input("b", "${subtractRef.output.result}"))
-                .add(new SimpleTask("divide", "divideRef")
+                .add(new WorkTask("divide", "divideRef")
                         .input("a", "${multiplyRef.output.result}")
                         .input("b", "2"))
                 .build();

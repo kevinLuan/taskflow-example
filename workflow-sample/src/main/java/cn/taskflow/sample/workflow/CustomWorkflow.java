@@ -3,7 +3,6 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 
 import java.util.concurrent.CompletableFuture;
-
 /**
  * 自定义工作流
  *

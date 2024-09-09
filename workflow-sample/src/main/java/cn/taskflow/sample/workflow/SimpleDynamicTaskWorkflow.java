@@ -5,7 +5,7 @@ import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.Dynamic;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.For;
-import cn.feiliu.taskflow.sdk.workflow.def.tasks.SimpleTask;
+import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,10 +30,10 @@ public class SimpleDynamicTaskWorkflow implements CustomWorkflow {
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
-                .add(new SimpleTask("getOrders", "getOrdersRef"))
+                .add(new WorkTask("getOrders", "getOrdersRef"))
                 .add(new For("orderRef", "${getOrdersRef.output.result}")
                         .loopOver(
-                                new SimpleTask("expressDelivery", "expressDeliveryRef")
+                                new WorkTask("expressDelivery", "expressDeliveryRef")
                                         .input("order", "${orderRef.output.element}"),
                                 new Dynamic("dynamicExpressDeliveryRef", "${expressDeliveryRef.output.expressType}")//
                                         .input("delivery", "${expressDeliveryRef.output}")

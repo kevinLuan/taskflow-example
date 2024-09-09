@@ -3,8 +3,8 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
-import cn.feiliu.taskflow.sdk.workflow.def.tasks.SimpleTask;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.Switch;
+import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,20 +39,20 @@ public class SwitchWorkflow implements CustomWorkflow {
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
-                .add(new SimpleTask("echo", "echoRef")
+                .add(new WorkTask("echo", "echoRef")
                         .input("value", "${workflow.input.echoMsg}"))
                 .add(new Switch("switchRef", "${workflow.input.caseExpression}")
                         .switchCase("AddOrSubtract",
-                                new SimpleTask("add", "addRef")
+                                new WorkTask("add", "addRef")
                                         .input("a", "${workflow.input.a}")
                                         .input("b", "${workflow.input.b}"),
-                                new SimpleTask("subtract", "subtractRef")
+                                new WorkTask("subtract", "subtractRef")
                                         .input("a", "${workflow.input.a}")
                                         .input("b", "${workflow.input.b}"))
-                        .switchCase("Multiply", new SimpleTask("multiply", "multiplyRef")
+                        .switchCase("Multiply", new WorkTask("multiply", "multiplyRef")
                                 .input("a", "${workflow.input.a}")
                                 .input("b", "${workflow.input.b}"))
-                        .defaultCase(new SimpleTask("divide", "divideRef")
+                        .defaultCase(new WorkTask("divide", "divideRef")
                                 .input("a", "${workflow.input.a}")
                                 .input("b", "${workflow.input.b}"))
                 ).build();
