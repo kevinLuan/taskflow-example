@@ -2,7 +2,7 @@ package cn.taskflow.sample;
 
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.sdk.workflow.def.ValidationException;
-import cn.taskflow.sample.workflow.CustomWorkflow;
+import cn.taskflow.sample.workflow.IWorkflowService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class StartupReadinessListener implements ApplicationListener<ApplicationReadyEvent> {
     @Autowired
-    private List<CustomWorkflow> workflows = new ArrayList<>();
+    private List<IWorkflowService> workflows = new ArrayList<>();
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -39,7 +39,7 @@ public class StartupReadinessListener implements ApplicationListener<Application
     private List<CompletableFuture<ExecutingWorkflow>> runWorkflows() {
         List<CompletableFuture<ExecutingWorkflow>> futures = new ArrayList<>();
         log.info("====================RunWorkflow====================");
-        for (CustomWorkflow workflow : workflows) {
+        for (IWorkflowService workflow : workflows) {
             log.info("Workflow run start: {}", workflow.getName());
             CompletableFuture<ExecutingWorkflow> future = workflow.run();
             futures.add(future.whenComplete((r, e) -> {
@@ -60,7 +60,7 @@ public class StartupReadinessListener implements ApplicationListener<Application
     private void registerWorkflows() {
         log.info("====================register workflow====================");
         log.info("Workflow register start, count: {}", workflows.size());
-        for (CustomWorkflow workflow : workflows) {
+        for (IWorkflowService workflow : workflows) {
             log.info("Workflow register start, name: {}, version:{}", workflow.getName(), workflow.getVersion());
             try {
                 boolean created = workflow.register();

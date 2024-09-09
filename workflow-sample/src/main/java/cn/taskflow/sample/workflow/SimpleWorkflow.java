@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Slf4j
 @Service
-public class SimpleWorkflow implements CustomWorkflow {
+public class SimpleWorkflow implements IWorkflowService {
     @Autowired
     private ApiClient apiClient;
     @Getter

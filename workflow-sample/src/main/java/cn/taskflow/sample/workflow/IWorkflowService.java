@@ -3,13 +3,14 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 
 import java.util.concurrent.CompletableFuture;
+
 /**
- * 自定义工作流
+ * 自定义任务流服务
  *
  * @author SHOUSHEN.LUAN
  * @since 2024-09-03
  */
-public interface CustomWorkflow {
+public interface IWorkflowService {
     /**
      * 获取自定义工作流名称
      *

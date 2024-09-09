@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  * @since 2024-09-07
  */
 @Service
-public class SimpleDynamicTaskWorkflow implements CustomWorkflow {
+public class SimpleDynamicTaskWorkflow implements IWorkflowService {
     @Autowired
     private ApiClient apiClient;
     @Getter

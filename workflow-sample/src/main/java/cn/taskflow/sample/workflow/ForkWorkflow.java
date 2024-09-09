@@ -35,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
  * @since 2024-09-08
  */
 @Service
-public class ForkWorkflow implements CustomWorkflow {
+public class ForkWorkflow implements IWorkflowService {
     @Autowired
     private ApiClient apiClient;
     @Getter

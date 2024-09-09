@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Slf4j
 @Service
-public class SwitchWorkflow implements CustomWorkflow {
+public class SwitchWorkflow implements IWorkflowService {
     @Autowired
     private ApiClient apiClient;
     @Getter
