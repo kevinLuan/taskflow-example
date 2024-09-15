@@ -3,6 +3,8 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
+import static cn.feiliu.taskflow.expression.Expr.*;
+import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.Switch;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import com.google.common.collect.Lists;
@@ -39,29 +41,34 @@ public class SwitchWorkflow implements IWorkflowService {
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
+                // echo任务
                 .add(new WorkTask("echo", "echoRef")
-                        .input("value", "${workflow.input.echoMsg}"))
-                .add(new Switch("switchRef", "${workflow.input.caseExpression}")
-                        .switchCase("AddOrSubtract",
+                        .input(Pair.of("value").fromWorkflow("echoMsg")))
+                // Switch节点(根据caseExpression的值进行分支)
+                .add(new Switch("switchRef", workflow().input.get("caseExpression"))
+                        // 当caseExpression的值为：'加减计算'
+                        .switchCase("加减计算",
                                 new WorkTask("add", "addRef")
-                                        .input("a", "${workflow.input.a}")
-                                        .input("b", "${workflow.input.b}"),
+                                        .input(Pair.of("a").fromWorkflow("a"))
+                                        .input(Pair.of("b").fromWorkflow("b")),
                                 new WorkTask("subtract", "subtractRef")
-                                        .input("a", "${workflow.input.a}")
-                                        .input("b", "${workflow.input.b}"))
-                        .switchCase("Multiply", new WorkTask("multiply", "multiplyRef")
-                                .input("a", "${workflow.input.a}")
-                                .input("b", "${workflow.input.b}"))
+                                        .input(Pair.of("a").fromWorkflow("a"))
+                                        .input(Pair.of("b").fromWorkflow("b")))
+                        // 当caseExpression的值: '乘法计算'
+                        .switchCase("乘法计算", new WorkTask("multiply", "multiplyRef")
+                                .input(Pair.of("a").fromWorkflow("a"))
+                                .input(Pair.of("b").fromWorkflow("b")))
+                        // 其他
                         .defaultCase(new WorkTask("divide", "divideRef")
-                                .input("a", "${workflow.input.a}")
-                                .input("b", "${workflow.input.b}"))
+                                .input(Pair.of("a").fromWorkflow("a"))
+                                .input(Pair.of("b").fromWorkflow("b")))
                 ).build();
         return workflow.registerWorkflow(true,true);
     }
 
     @Override
     public CompletableFuture<ExecutingWorkflow> run() {
-        List<String> list = Lists.newArrayList("AddOrSubtract", "Multiply", "Other");
+        List<String> list = Lists.newArrayList("加减计算", "乘法计算", "取模计算");
         Map<String, Object> reqData = new HashMap<>();
         reqData.put("echoMsg", Map.of("value", "你好世界!"));
         reqData.put("a", 1000);

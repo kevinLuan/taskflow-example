@@ -3,7 +3,7 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
-import cn.feiliu.taskflow.expression.Expr;
+import static cn.feiliu.taskflow.expression.Expr.*;
 import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.DoWhile;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
@@ -27,31 +27,38 @@ public class DoWhileWorkflow implements IWorkflowService {
     private String name = "simple-do-while-workflow";
     @Getter
     private int version = 1;
-
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> feiLiuWorkflow = apiClient.newWorkflowBuilder(name, version)
+                // 加法计算任务
                 .add(new WorkTask("add", "addRef")
                         .input(Pair.of("a").fromWorkflow("numA"))
                         .input(Pair.of("b").fromWorkflow("numB")))
+                //do-while循环
                 .add(new DoWhile("doWhile1Ref", 1)
                         .loopOver(
+                                // 减法计算任务
                                 new WorkTask("subtract", "subtract1Ref")
                                         .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
                                         .input("b", 1),
+                                // 乘法计算任务
                                 new WorkTask("multiply", "multiply1Ref")
                                         .input(Pair.of("a").fromTaskOutput("subtract1Ref", "result"))
                                         .input("b", 2)
                         ))
-                .add(new DoWhile("doWhile2Ref", Expr.workflow("loopCount"))
+                //do-while循环
+                .add(new DoWhile("doWhile2Ref", workflow().input.get("loopCount"))
                         .loopOver(
+                                // 减法计算任务
                                 new WorkTask("subtract", "subtract2Ref")
                                         .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
                                         .input(Pair.of("b").fromWorkflow("numB")),
+                                // 乘法计算任务
                                 new WorkTask("multiply", "multiply2Ref")
                                         .input(Pair.of("a").fromTaskOutput("subtract2Ref", "result"))
                                         .input("b", 2)
                         ))
+                // 除法计算任务
                 .add(new WorkTask("divide", "divideRef")
                         .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
                         .input("b", "2")

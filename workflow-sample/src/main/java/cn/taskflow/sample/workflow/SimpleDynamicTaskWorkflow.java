@@ -3,6 +3,10 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
+
+import static cn.feiliu.taskflow.expression.Expr.*;
+
+import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.Dynamic;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.For;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
@@ -30,15 +34,17 @@ public class SimpleDynamicTaskWorkflow implements IWorkflowService {
     @Override
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
+                // 获取订单列表任务
                 .add(new WorkTask("getOrders", "getOrdersRef"))
-                .add(new For("orderRef", "${getOrdersRef.output.result}")
+                // 循环遍历任务
+                .add(new For("orderRef", task("getOrdersRef").output.get("result"))
                         .loopOver(
                                 new WorkTask("expressDelivery", "expressDeliveryRef")
-                                        .input("order", "${orderRef.output.element}"),
-                                new Dynamic("dynamicExpressDeliveryRef", "${expressDeliveryRef.output.expressType}")//
-                                        .input("delivery", "${expressDeliveryRef.output}")
-                        ))
-                .build();
+                                        .input(Pair.of("order").fromTaskOutput("orderRef", "element")),
+                                new Dynamic("dynamicExpressDeliveryRef", task("expressDeliveryRef").output.get("expressType"))//
+                                        .input(Pair.of("delivery").fromTaskOutput("expressDeliveryRef"))
+                        )
+                ).build();
         return workflow.registerWorkflow(true, true);
     }
 

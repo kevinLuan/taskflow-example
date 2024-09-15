@@ -3,6 +3,7 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
+import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,20 +29,28 @@ public class SimpleWorkflow implements IWorkflowService {
     private int version = 1;
 
     @Override
+    /**
+     * 注册工作流
+     * @return 是否成功注册
+     */
     public boolean register() {
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
+                // 加法计算任务
                 .add(new WorkTask("add", "addRef")
-                        .input("a", "${workflow.input.a}")
-                        .input("b", "${workflow.input.b}"))
+                        .input(Pair.of("a").fromWorkflow("a"))
+                        .input(Pair.of("b").fromWorkflow("b")))
+                // 减法计算任务
                 .add(new WorkTask("subtract", "subtractRef")
-                        .input("a", "${addRef.output.sum}")
+                        .input(Pair.of("a").fromTaskOutput("addRef","sum"))
                         .input("b", 10))
+                // 乘法计算任务
                 .add(new WorkTask("multiply", "multiplyRef")
-                        .input("a", "${addRef.output.sum}")
-                        .input("b", "${subtractRef.output.result}"))
+                        .input(Pair.of("a").fromTaskOutput("addRef","sum"))
+                        .input(Pair.of("b").fromTaskOutput("subtractRef","result")))
+                // 除法计算任务
                 .add(new WorkTask("divide", "divideRef")
-                        .input("a", "${multiplyRef.output.result}")
-                        .input("b", "2"))
+                        .input(Pair.of("a").fromTaskOutput("multiplyRef","result"))
+                        .input("b", 2))
                 .build();
         return workflow.registerWorkflow(true, true);
     }

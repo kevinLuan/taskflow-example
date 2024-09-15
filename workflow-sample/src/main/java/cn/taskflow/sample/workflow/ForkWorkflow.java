@@ -3,6 +3,7 @@ package cn.taskflow.sample.workflow;
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
+import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.ForkJoin;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.Task;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
@@ -44,26 +45,37 @@ public class ForkWorkflow implements IWorkflowService {
     private int version = 1;
 
     @Override
+    /**
+     * 注册工作流
+     * @return 是否成功注册
+     */
     public boolean register() {
         Task[][] tasks = new Task[3][];
+        // 第一组任务
         tasks[0] = new Task[]{
+                // 加法计算任务
                 new WorkTask("add", "addRef")
-                        .input("a", "${workflow.input.a}")
-                        .input("b", "${workflow.input.b}"),
+                        .input(Pair.of("a").fromWorkflow("a"))
+                        .input(Pair.of("b").fromWorkflow("b")),
+                // 减法计算任务
                 new WorkTask("subtract", "subtractRef")
-                        .input("a", "${workflow.input.a}")
-                        .input("b", "${workflow.input.b}")
+                        .input(Pair.of("a").fromWorkflow("a"))
+                        .input(Pair.of("b").fromWorkflow("b"))
         };
+        // 第二组任务
         tasks[1] = new Task[]{
+                // 乘法计算任务
                 new WorkTask("multiply", "multiplyRef")
-                        .input("a", "${workflow.input.a}")
-                        .input("b", "${workflow.input.b}"),
+                        .input(Pair.of("a").fromWorkflow("a"))
+                        .input(Pair.of("b").fromWorkflow("b")),
+                // 除法计算任务
                 new WorkTask("divide", "divideRef")
-                        .input("a", "${workflow.input.a}")
-                        .input("b", "${workflow.input.b}")
+                        .input(Pair.of("a").fromWorkflow("a"))
+                        .input(Pair.of("b").fromWorkflow("b"))
         };
+        // 第三组任务
         tasks[2] = new Task[]{new WorkTask("echo", "echoRef")
-                .input("value", "${workflow.input.msg}")};
+                .input(Pair.of("value").fromWorkflow("msg"))};
 
         FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
                 .add(new ForkJoin("forkRef", tasks)).build();
