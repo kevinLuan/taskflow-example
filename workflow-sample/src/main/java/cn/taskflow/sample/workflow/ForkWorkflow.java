@@ -1,7 +1,7 @@
 package cn.taskflow.sample.workflow;
 
 import cn.feiliu.taskflow.client.ApiClient;
-import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
+import cn.feiliu.taskflow.common.metadata.workflow.WorkflowDefinition;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.ForkJoin;
@@ -77,9 +77,11 @@ public class ForkWorkflow implements IWorkflowService {
         tasks[2] = new Task[]{new WorkTask("echo", "echoRef")
                 .input(Pair.of("value").fromWorkflow("msg"))};
 
-        FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
-                .add(new ForkJoin("forkRef", tasks)).build();
-        return workflow.registerWorkflow(true, true);
+        WorkflowDefinition workflowDef = WorkflowDefinition.newBuilder(name, version)
+                .addTask(new ForkJoin("forkRef", tasks))
+                .build();
+
+        return apiClient.getWorkflowDefClient().registerWorkflow(workflowDef, true);
     }
 
     @Override

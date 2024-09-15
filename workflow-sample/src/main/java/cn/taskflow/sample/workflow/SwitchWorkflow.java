@@ -1,9 +1,11 @@
 package cn.taskflow.sample.workflow;
 
 import cn.feiliu.taskflow.client.ApiClient;
-import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
+import cn.feiliu.taskflow.common.metadata.workflow.WorkflowDefinition;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
+
 import static cn.feiliu.taskflow.expression.Expr.*;
+
 import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.Switch;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
@@ -40,12 +42,12 @@ public class SwitchWorkflow implements IWorkflowService {
      */
     @Override
     public boolean register() {
-        FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
+        WorkflowDefinition workflowDef = WorkflowDefinition.newBuilder(name, version)
                 // echo任务
-                .add(new WorkTask("echo", "echoRef")
+                .addTask(new WorkTask("echo", "echoRef")
                         .input(Pair.of("value").fromWorkflow("echoMsg")))
                 // Switch节点(根据caseExpression的值进行分支)
-                .add(new Switch("switchRef", workflow().input.get("caseExpression"))
+                .addTask(new Switch("switchRef", workflow().input.get("caseExpression"))
                         // 当caseExpression的值为：'加减计算'
                         .switchCase("加减计算",
                                 new WorkTask("add", "addRef")
@@ -63,7 +65,7 @@ public class SwitchWorkflow implements IWorkflowService {
                                 .input(Pair.of("a").fromWorkflow("a"))
                                 .input(Pair.of("b").fromWorkflow("b")))
                 ).build();
-        return workflow.registerWorkflow(true,true);
+        return apiClient.getWorkflowDefClient().registerWorkflow(workflowDef, true);
     }
 
     @Override

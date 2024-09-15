@@ -1,7 +1,7 @@
 package cn.taskflow.sample.workflow;
 
 import cn.feiliu.taskflow.client.ApiClient;
-import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
+import cn.feiliu.taskflow.common.metadata.workflow.WorkflowDefinition;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 
 import static cn.feiliu.taskflow.expression.Expr.*;
@@ -33,19 +33,18 @@ public class SimpleDynamicTaskWorkflow implements IWorkflowService {
 
     @Override
     public boolean register() {
-        FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
+        WorkflowDefinition workflowDef = WorkflowDefinition.newBuilder(name, version)
                 // 获取订单列表任务
-                .add(new WorkTask("getOrders", "getOrdersRef"))
+                .addTask(new WorkTask("getOrders", "getOrdersRef"))
                 // 循环遍历任务
-                .add(new For("orderRef", task("getOrdersRef").output.get("result"))
-                        .loopOver(
-                                new WorkTask("expressDelivery", "expressDeliveryRef")
-                                        .input(Pair.of("order").fromTaskOutput("orderRef", "element")),
-                                new Dynamic("dynamicExpressDeliveryRef", task("expressDeliveryRef").output.get("expressType"))//
-                                        .input(Pair.of("delivery").fromTaskOutput("expressDeliveryRef"))
+                .addTask(new For("orderRef", task("getOrdersRef").output.get("result"))
+                        .childTask(new WorkTask("expressDelivery", "expressDeliveryRef")
+                                .input(Pair.of("order").fromTaskOutput("orderRef", "element")))
+                        .childTask(new Dynamic("dynamicExpressDeliveryRef", task("expressDeliveryRef").output.get("expressType"))
+                                .input(Pair.of("delivery").fromTaskOutput("expressDeliveryRef"))
                         )
                 ).build();
-        return workflow.registerWorkflow(true, true);
+        return apiClient.getWorkflowDefClient().registerWorkflow(workflowDef, true);
     }
 
     @Override

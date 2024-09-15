@@ -1,7 +1,7 @@
 package cn.taskflow.sample.workflow;
 
 import cn.feiliu.taskflow.client.ApiClient;
-import cn.feiliu.taskflow.client.core.FeiLiuWorkflow;
+import cn.feiliu.taskflow.common.metadata.workflow.WorkflowDefinition;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.WorkTask;
@@ -34,25 +34,25 @@ public class SimpleWorkflow implements IWorkflowService {
      * @return 是否成功注册
      */
     public boolean register() {
-        FeiLiuWorkflow<Map<String, Object>> workflow = apiClient.newWorkflowBuilder(name, version)
+        WorkflowDefinition workflowDef = WorkflowDefinition.newBuilder(name, version)
                 // 加法计算任务
-                .add(new WorkTask("add", "addRef")
+                .addTask(new WorkTask("add", "addRef")
                         .input(Pair.of("a").fromWorkflow("a"))
                         .input(Pair.of("b").fromWorkflow("b")))
                 // 减法计算任务
-                .add(new WorkTask("subtract", "subtractRef")
-                        .input(Pair.of("a").fromTaskOutput("addRef","sum"))
+                .addTask(new WorkTask("subtract", "subtractRef")
+                        .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
                         .input("b", 10))
                 // 乘法计算任务
-                .add(new WorkTask("multiply", "multiplyRef")
-                        .input(Pair.of("a").fromTaskOutput("addRef","sum"))
-                        .input(Pair.of("b").fromTaskOutput("subtractRef","result")))
+                .addTask(new WorkTask("multiply", "multiplyRef")
+                        .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
+                        .input(Pair.of("b").fromTaskOutput("subtractRef", "result")))
                 // 除法计算任务
-                .add(new WorkTask("divide", "divideRef")
-                        .input(Pair.of("a").fromTaskOutput("multiplyRef","result"))
+                .addTask(new WorkTask("divide", "divideRef")
+                        .input(Pair.of("a").fromTaskOutput("multiplyRef", "result"))
                         .input("b", 2))
                 .build();
-        return workflow.registerWorkflow(true, true);
+        return apiClient.getWorkflowDefClient().registerWorkflow(workflowDef, true);
     }
 
     @Override
