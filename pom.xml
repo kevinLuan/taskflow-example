@@ -12,9 +12,9 @@
 	<artifactId>taskflow-sample</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>taskflow-sample</name>
+	<name>${project.artifactId}</name>
 	<description>The taskflow inherits from the sample program</description>
-	<url/>
+	<url>https://github.com/kevinLuan/taskflow-sample</url>
 	<licenses>
 		<license/>
 	</licenses>

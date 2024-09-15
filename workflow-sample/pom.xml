@@ -8,13 +8,20 @@
         <artifactId>taskflow-sample</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-
+    <url>https://github.com/kevinLuan/taskflow-sample</url>
     <artifactId>workflow-sample</artifactId>
-
+    <name>${project.artifactId}</name>
+    <description>The taskflow inherits from the sample program</description>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>cn.taskflow</groupId>
+            <artifactId>taskflow-sdk</artifactId>
+            <version>0.0.1-beta</version>
+        </dependency>
+    </dependencies>
 </project>
