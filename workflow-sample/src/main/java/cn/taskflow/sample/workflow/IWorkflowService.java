@@ -1,9 +1,5 @@
 package cn.taskflow.sample.workflow;
 
-import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
-
-import java.util.concurrent.CompletableFuture;
-
 /**
  * 自定义任务流服务
  *
@@ -33,6 +29,6 @@ public interface IWorkflowService {
     /**
      * 运行工作流
      */
-    CompletableFuture<ExecutingWorkflow> run();
+    String runWorkflow();
 
 }

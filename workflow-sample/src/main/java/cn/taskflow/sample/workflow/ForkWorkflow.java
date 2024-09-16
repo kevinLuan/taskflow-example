@@ -1,7 +1,9 @@
 package cn.taskflow.sample.workflow;
 
 import cn.feiliu.taskflow.client.ApiClient;
+import cn.feiliu.taskflow.common.metadata.workflow.StartWorkflowRequest;
 import cn.feiliu.taskflow.common.metadata.workflow.WorkflowDefinition;
+import cn.feiliu.taskflow.common.model.WorkflowRun;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.expression.Pair;
 import cn.feiliu.taskflow.sdk.workflow.def.tasks.ForkJoin;
@@ -81,15 +83,16 @@ public class ForkWorkflow implements IWorkflowService {
                 .addTask(new ForkJoin("forkRef", tasks))
                 .build();
 
-        return apiClient.getWorkflowDefClient().registerWorkflow(workflowDef, true);
+        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     @Override
-    public CompletableFuture<ExecutingWorkflow> run() {
+    public String runWorkflow() {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("a", 100);
         dataMap.put("b", 200);
         dataMap.put("msg", "Hello World!");
-        return apiClient.getWorkflowExecutor().executeWorkflow(name, version, dataMap);
+        StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
+        return apiClient.getWorkflowClient().startWorkflow(req);
     }
 }

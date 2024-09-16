@@ -1,7 +1,9 @@
 package cn.taskflow.sample.workflow;
 
 import cn.feiliu.taskflow.client.ApiClient;
+import cn.feiliu.taskflow.common.metadata.workflow.StartWorkflowRequest;
 import cn.feiliu.taskflow.common.metadata.workflow.WorkflowDefinition;
+import cn.feiliu.taskflow.common.model.WorkflowRun;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 
 import static cn.feiliu.taskflow.expression.Expr.*;
@@ -65,18 +67,19 @@ public class SwitchWorkflow implements IWorkflowService {
                                 .input(Pair.of("a").fromWorkflow("a"))
                                 .input(Pair.of("b").fromWorkflow("b")))
                 ).build();
-        return apiClient.getWorkflowDefClient().registerWorkflow(workflowDef, true);
+        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     @Override
-    public CompletableFuture<ExecutingWorkflow> run() {
+    public String runWorkflow() {
         List<String> list = Lists.newArrayList("加减计算", "乘法计算", "取模计算");
-        Map<String, Object> reqData = new HashMap<>();
-        reqData.put("echoMsg", Map.of("value", "你好世界!"));
-        reqData.put("a", 1000);
-        reqData.put("b", 200);
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("echoMsg", Map.of("value", "你好世界!"));
+        dataMap.put("a", 1000);
+        dataMap.put("b", 200);
         //随机获取一个case
-        reqData.put("caseExpression", list.get(ThreadLocalRandom.current().nextInt(list.size())));
-        return apiClient.getWorkflowExecutor().executeWorkflow(name, version, reqData);
+        dataMap.put("caseExpression", list.get(ThreadLocalRandom.current().nextInt(list.size())));
+        StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
+        return apiClient.getWorkflowClient().startWorkflow(req);
     }
 }

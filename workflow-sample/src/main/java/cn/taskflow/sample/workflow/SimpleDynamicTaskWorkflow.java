@@ -1,7 +1,9 @@
 package cn.taskflow.sample.workflow;
 
 import cn.feiliu.taskflow.client.ApiClient;
+import cn.feiliu.taskflow.common.metadata.workflow.StartWorkflowRequest;
 import cn.feiliu.taskflow.common.metadata.workflow.WorkflowDefinition;
+import cn.feiliu.taskflow.common.model.WorkflowRun;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 
 import static cn.feiliu.taskflow.expression.Expr.*;
@@ -44,12 +46,13 @@ public class SimpleDynamicTaskWorkflow implements IWorkflowService {
                                 .input(Pair.of("delivery").fromTaskOutput("expressDeliveryRef"))
                         )
                 ).build();
-        return apiClient.getWorkflowDefClient().registerWorkflow(workflowDef, true);
+        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     @Override
-    public CompletableFuture<ExecutingWorkflow> run() {
+    public String runWorkflow() {
         Map<String, Object> dataMap = new HashMap<>();
-        return apiClient.getWorkflowExecutor().executeWorkflow(name, version, dataMap);
+        StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
+        return apiClient.getWorkflowClient().startWorkflow(req);
     }
 }

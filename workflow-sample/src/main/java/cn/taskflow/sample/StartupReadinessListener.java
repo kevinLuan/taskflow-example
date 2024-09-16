@@ -1,8 +1,11 @@
 package cn.taskflow.sample;
 
+import cn.feiliu.taskflow.client.ApiClient;
+import cn.feiliu.taskflow.common.model.WorkflowRun;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.sdk.workflow.def.ValidationException;
 import cn.taskflow.sample.workflow.IWorkflowService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,7 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author SHOUSHEN.LUAN
@@ -23,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 public class StartupReadinessListener implements ApplicationListener<ApplicationReadyEvent> {
     @Autowired
     private List<IWorkflowService> workflows = new ArrayList<>();
+    @Autowired
+    private ApiClient apiClient;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -33,7 +40,8 @@ public class StartupReadinessListener implements ApplicationListener<Application
                 e.printStackTrace();
             }
         });
-        asyncWaitingForTimeout(future);
+        future.join();
+//        asyncWaitingForTimeout(future);
     }
 
     private List<CompletableFuture<ExecutingWorkflow>> runWorkflows() {
@@ -41,17 +49,38 @@ public class StartupReadinessListener implements ApplicationListener<Application
         log.info("====================RunWorkflow====================");
         for (IWorkflowService workflow : workflows) {
             log.info("Workflow run start: {}", workflow.getName());
-            CompletableFuture<ExecutingWorkflow> future = workflow.run();
-            futures.add(future.whenComplete((r, e) -> {
+            String workflowId = workflow.runWorkflow();
+            futures.add(CompletableFuture.supplyAsync(() -> {
+                return waitForTerminal(workflowId, 30);
+            }).whenComplete((r, e) -> {
                 if (r != null) {
-                    log.info("Workflow execution done, name: `{}` workflowId: {}", workflow.getName(), r.getWorkflowId());
+                    log.info("Workflow execution name: `{}` workflowId: {}, status:{}", workflow.getName(), r.getWorkflowId(), r.getStatus());
                 } else {
                     log.error("Workflow execution error, name: `{}` error:{}", workflow.getName(), e);
                 }
             }));
         }
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         log.info("====================RunWorkflow Done====================");
         return futures;
+    }
+
+    @SneakyThrows
+    public ExecutingWorkflow waitForTerminal(String workflowId, int waitForSeconds) {
+        long startTime = System.currentTimeMillis();
+        for (; ; ) {
+            ExecutingWorkflow workflow = apiClient.getWorkflowClient().getWorkflow(workflowId, true);
+            if (workflow.getStatus().isTerminal()) {
+                return workflow;
+            } else {
+                long cost = System.currentTimeMillis() - startTime;
+                if (cost >= waitForSeconds * 1000) {
+                    throw new TimeoutException("Timeout exceeded while waiting for workflow to reach terminal state.");
+                }
+                long remaining = waitForSeconds * 1000 - cost;
+                Thread.sleep(Math.min(100, remaining));
+            }
+        }
     }
 
     /**
