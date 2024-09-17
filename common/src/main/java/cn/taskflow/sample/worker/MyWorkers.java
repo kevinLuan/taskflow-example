@@ -8,6 +8,8 @@ import cn.taskflow.sample.pojo.ExpressDelivery;
 import cn.taskflow.sample.pojo.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -17,9 +19,10 @@ import static cn.feiliu.taskflow.common.utils.TaskflowUtils.f;
  * @author SHOUSHEN.LUAN
  * @since 2024-09-01
  */
-@Slf4j
 @TaskflowWorkers
 public class MyWorkers {
+    private static Logger log = LoggerFactory.getLogger(MyWorkers.class);
+
     /**
      * 简单的echo工作任务节点
      *
@@ -45,7 +48,7 @@ public class MyWorkers {
     @WorkerTask(value = "expressDelivery", title = "智能发货", threadCount = 1)
     public ExpressDelivery expressDelivery(@InputParam("order") Order order) {
         String expressType = order.getTotalAmount() >= 100 ? "sfExpress" : "emsExpress";
-        log.info("智能发货 订单：{},totalAmount：{}, 指派快递：{}", order.getOrderId(),order.getTotalAmount(), expressType);
+        log.info("智能发货 订单：{},totalAmount：{}, 指派快递：{}", order.getOrderId(), order.getTotalAmount(), expressType);
         return ExpressDelivery.builder()
                 .expressType(expressType)
                 .orderId(order.getOrderId())

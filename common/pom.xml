@@ -3,30 +3,28 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>cn.taskflow.sample</groupId>
-        <artifactId>taskflow-sample</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
-    <url>https://github.com/kevinLuan/taskflow-sample</url>
-    <artifactId>workflow-sample</artifactId>
-    <name>${project.artifactId}</name>
-    <description>The taskflow inherits from the sample program</description>
+    <groupId>cn.taskflow.sample</groupId>
+    <artifactId>common</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.22</lombok.version>
     </properties>
     <dependencies>
+        <!-- 任务云平台 http://www.taskflow.cn/ -->
         <dependency>
             <groupId>cn.taskflow</groupId>
             <artifactId>taskflow-sdk</artifactId>
             <version>0.0.1-beta</version>
         </dependency>
+        <!-- lombok -->
         <dependency>
-            <groupId>cn.taskflow.sample</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

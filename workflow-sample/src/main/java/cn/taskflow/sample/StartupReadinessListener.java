@@ -4,6 +4,7 @@ import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.common.model.WorkflowRun;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
 import cn.feiliu.taskflow.sdk.workflow.def.ValidationException;
+import cn.taskflow.sample.utils.Utils;
 import cn.taskflow.sample.workflow.IWorkflowService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -35,13 +36,9 @@ public class StartupReadinessListener implements ApplicationListener<Application
     public void onApplicationEvent(ApplicationReadyEvent event) {
         registerWorkflows();
         List<CompletableFuture<ExecutingWorkflow>> futures = runWorkflows();
-        CompletableFuture<Void> future = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((r, e) -> {
-            if (e != null) {
-                e.printStackTrace();
-            }
-        });
-        future.join();
-//        asyncWaitingForTimeout(future);
+        log.info("Block waiting for workflow execution...");
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        log.info("工作流执行完成");
     }
 
     private List<CompletableFuture<ExecutingWorkflow>> runWorkflows() {
@@ -51,7 +48,7 @@ public class StartupReadinessListener implements ApplicationListener<Application
             log.info("Workflow run start: {}", workflow.getName());
             String workflowId = workflow.runWorkflow();
             futures.add(CompletableFuture.supplyAsync(() -> {
-                return waitForTerminal(workflowId, 30);
+                return Utils.waitForTerminal(workflowId, 30, apiClient);
             }).whenComplete((r, e) -> {
                 if (r != null) {
                     log.info("Workflow execution name: `{}` workflowId: {}, status:{}", workflow.getName(), r.getWorkflowId(), r.getStatus());
@@ -63,24 +60,6 @@ public class StartupReadinessListener implements ApplicationListener<Application
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         log.info("====================RunWorkflow Done====================");
         return futures;
-    }
-
-    @SneakyThrows
-    public ExecutingWorkflow waitForTerminal(String workflowId, int waitForSeconds) {
-        long startTime = System.currentTimeMillis();
-        for (; ; ) {
-            ExecutingWorkflow workflow = apiClient.getWorkflowClient().getWorkflow(workflowId, true);
-            if (workflow.getStatus().isTerminal()) {
-                return workflow;
-            } else {
-                long cost = System.currentTimeMillis() - startTime;
-                if (cost >= waitForSeconds * 1000) {
-                    throw new TimeoutException("Timeout exceeded while waiting for workflow to reach terminal state.");
-                }
-                long remaining = waitForSeconds * 1000 - cost;
-                Thread.sleep(Math.min(100, remaining));
-            }
-        }
     }
 
     /**
@@ -111,18 +90,5 @@ public class StartupReadinessListener implements ApplicationListener<Application
             }
         }
         log.info("====================register done====================");
-    }
-
-    /**
-     * 仅在 debugger 模式下
-     */
-    private static void asyncWaitingForTimeout(CompletableFuture<Void> future) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                future.get(5, TimeUnit.MINUTES);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 }

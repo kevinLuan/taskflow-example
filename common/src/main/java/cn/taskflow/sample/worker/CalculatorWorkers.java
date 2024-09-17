@@ -19,8 +19,9 @@ public class CalculatorWorkers {
      * @return 两个整数相加的结果
      */
     @OutputParam("sum")
-    @WorkerTask(value="add",title = "加法")
-    public int add(@InputParam("a") int a,@InputParam("b") int b) {
+    @WorkerTask(value = "add", title = "加法")
+    public int add(@InputParam("a") int a, @InputParam("b") int b) {
+        System.out.println("add( " + a + " + " + b + " )");
         return a + b;
     }
 
@@ -31,8 +32,9 @@ public class CalculatorWorkers {
      * @param b 第二个整数
      * @return 两个整数相减的结果
      */
-    @WorkerTask(value="subtract",title = "减法")
-    public int subtract(@InputParam("a") int a,@InputParam("b") int b) {
+    @WorkerTask(value = "subtract", title = "减法")
+    public int subtract(@InputParam("a") int a, @InputParam("b") int b) {
+        System.out.println("subtract( " + a + " - " + b + " )");
         return a - b;
     }
 
@@ -43,8 +45,9 @@ public class CalculatorWorkers {
      * @param b 第二个整数
      * @return 两个整数相乘的结果
      */
-    @WorkerTask(value="multiply",title = "乘法")
-    public int multiply(@InputParam("a") int a,@InputParam("b") int b) {
+    @WorkerTask(value = "multiply", title = "乘法")
+    public int multiply(@InputParam("a") int a, @InputParam("b") int b) {
+        System.out.println("multiply( " + a + " x " + b + " )");
         return a * b;
     }
 
@@ -56,8 +59,9 @@ public class CalculatorWorkers {
      * @return 两个整数相除的结果
      * @throws ArithmeticException 如果第二个整数为0
      */
-    @WorkerTask(value="divide",title = "除法")
-    public double divide(@InputParam("a") int a,@InputParam("b") int b) throws ArithmeticException {
+    @WorkerTask(value = "divide", title = "除法")
+    public double divide(@InputParam("a") int a, @InputParam("b") int b) throws ArithmeticException {
+        System.out.println("divide( " + a + " / " + b + " )");
         if (b == 0) {
             throw new ArithmeticException("除数不能为0");
         }
