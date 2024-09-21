@@ -70,11 +70,14 @@ public class DoWhileWorkflow implements IWorkflowService {
 
     @Override
     public String runWorkflow() {
+        return apiClient.getWorkflowClient().startWorkflow(getRequest());
+    }
+
+    public StartWorkflowRequest getRequest() {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("numA", 100);
         dataMap.put("numB", 200);
         dataMap.put("loopCount", 3);
-        StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
-        return apiClient.getWorkflowClient().startWorkflow(req);
+        return StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
     }
 }

@@ -35,10 +35,16 @@ public class StartupReadinessListener implements ApplicationListener<Application
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         registerWorkflows();
-        List<CompletableFuture<ExecutingWorkflow>> futures = runWorkflows();
-        log.info("Block waiting for workflow execution...");
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        log.info("工作流执行完成");
+        new Thread(() -> {
+            try {
+                List<CompletableFuture<ExecutingWorkflow>> futures = runWorkflows();
+                log.info("Block waiting for workflow execution...");
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+                log.info("工作流执行完成");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private List<CompletableFuture<ExecutingWorkflow>> runWorkflows() {
@@ -48,7 +54,7 @@ public class StartupReadinessListener implements ApplicationListener<Application
             log.info("Workflow run start: {}", workflow.getName());
             String workflowId = workflow.runWorkflow();
             futures.add(CompletableFuture.supplyAsync(() -> {
-                return Utils.waitForTerminal(workflowId, 30, apiClient);
+                return Utils.waitForTerminal(workflowId, 600, apiClient);
             }).whenComplete((r, e) -> {
                 if (r != null) {
                     log.info("Workflow execution name: `{}` workflowId: {}, status:{}", workflow.getName(), r.getWorkflowId(), r.getStatus());
