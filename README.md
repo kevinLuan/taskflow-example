@@ -15,14 +15,23 @@
 ## 简介
    TaskFlow 是一个工作流&任务流的编排引擎服务，旨在简化复杂任务的管理和调度。它提供了一套API接口，使得开发者能够轻松地定义、执行和监控任务流。
    此SDK API实现的目标是在特定的编程环境中提供对 taskflow 云平台功能的访问，允许用户构建、提交和管理任务流。
-
-## 功能
-
 - 任务定义&发布
 - 工作流注册&发布
 - 运行及管理工作流
 - 运行任务
 - 工作流调度
+
+## 工程模块
+```plaintext
+   +-- taskflow-sample
+   |   +-- common (公共子模块)
+   |   +-- java-native-sample (演示Java原生工程集成sdk)
+   |   +-- spring-worker-sample (演示Spring工程的形式定义 worker 示例)
+   |   +-- spring-workflow-sample (演示Spring工程的形式定义 workflow)
+
+```
+
+
 
 
 ## 快速开始
@@ -37,7 +46,7 @@
 
 ### 运行项目
 
-1. 克隆仓库:
+克隆仓库:
 ```bash
  git clone https://github.com/kevinLuan/taskflow-sample.git
  cd taskflow-sample

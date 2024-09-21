@@ -22,8 +22,8 @@
 		<developer/>
 	</developers>
 	<modules>
-		<module>worker-sample</module>
-		<module>workflow-sample</module>
+		<module>spring-worker-sample</module>
+		<module>spring-workflow-sample</module>
 		<module>java-native-sample</module>
 		<module>common</module>
 	</modules>
