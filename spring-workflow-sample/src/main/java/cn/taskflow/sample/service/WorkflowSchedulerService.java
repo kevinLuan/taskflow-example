@@ -33,8 +33,6 @@ public class WorkflowSchedulerService {
         request.setScheduleStartTime(new Date());
         request.setScheduleEndTime(DateUtils.addMinutes(new Date(), 5));
         request.setStartWorkflowRequest(doWhileWorkflow.getRequest());
-        request.setCreatedBy("your_name");//
-        request.setUpdatedBy("your_name");
         request.setOverwrite(true);
         WorkflowSchedule workflowSchedule = apiClient.getSchedulerClient().getSchedule(request.getName());
         if (workflowSchedule == null) {

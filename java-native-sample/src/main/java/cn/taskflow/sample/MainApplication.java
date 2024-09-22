@@ -16,26 +16,40 @@ import static cn.feiliu.taskflow.common.utils.TaskflowUtils.f;
  * @since 2024-09-17
  */
 public class MainApplication {
-    static String HOST = "http://localhost:8082/api";
-    static String KEY_ID = "b51d09a9fb294ee5b690c4ac1b17e6a6";
-    static String SECRET = "8153a2e9ba3c42adb1d01db91d193533";
-    static String GRPC_HOST = "localhost";
-    static int GRPC_PORT = 9000;
-
-    public static void main(String[] args) {
-        ApiClient apiClient = new ApiClient(HOST, KEY_ID, SECRET);
+    private static ApiClient getApiClient() {
+        String keyId = "10000";
+        String keySecret = "0cd526a9d3c34e588598f47e635c22f2";
+        ApiClient apiClient = new ApiClient("http://open.taskflow.cn/api/", keyId, keySecret);
         apiClient.getTaskEngine()
                 .addWorkers(
                         new MyWorkers(),
                         new CalculatorWorkers()
                 ).initWorkerTasks()
                 .startRunningTasks();
-        apiClient.setUseGRPC(GRPC_HOST, GRPC_PORT);
+        return apiClient;
+    }
+
+    private static ApiClient getLocation() {
+        String keyId = "b51d09a9fb294ee5b690c4ac1b17e6a6";
+        String keySecret = "8153a2e9ba3c42adb1d01db91d193533";
+        ApiClient apiClient = new ApiClient("http://localhost:8081/api", keyId, keySecret);
+        apiClient.getTaskEngine()
+                .addWorkers(
+                        new MyWorkers(),
+                        new CalculatorWorkers()
+                ).initWorkerTasks()
+                .startRunningTasks();
+        apiClient.setUseGRPC("localhost", 9000);
+        return apiClient;
+    }
+
+    public static void main(String[] args) {
+        ApiClient apiClient = getApiClient();
         SimpleWorkflow workflow = new SimpleWorkflow(apiClient);
         System.out.println("注册工作流：" + workflow.register());
         String workflowId = workflow.runWorkflow();
         System.out.println("workflowId:" + workflowId);
-        ExecutingWorkflow ew = Utils.waitForTerminal(workflowId, 60, apiClient);
+        ExecutingWorkflow ew = Utils.waitForTerminal(workflowId, 600, apiClient);
         System.out.println(f("Workflow execution name:%s workflowId:%s, status:%s", ew.getWorkflowName(), ew.getWorkflowId(), ew.getStatus()));
     }
 
