@@ -2,12 +2,13 @@ package cn.taskflow.sample;
 
 import cn.feiliu.taskflow.client.ApiClient;
 import cn.feiliu.taskflow.common.run.ExecutingWorkflow;
+import cn.taskflow.sample.utils.PropertiesReader;
 import cn.taskflow.sample.utils.Utils;
 import cn.taskflow.sample.worker.CalculatorWorkers;
 import cn.taskflow.sample.worker.MyWorkers;
 import cn.taskflow.sample.workflow.SimpleWorkflow;
 
-import java.util.concurrent.TimeoutException;
+import java.io.IOException;
 
 import static cn.feiliu.taskflow.common.utils.TaskflowUtils.f;
 
@@ -16,35 +17,31 @@ import static cn.feiliu.taskflow.common.utils.TaskflowUtils.f;
  * @since 2024-09-17
  */
 public class MainApplication {
-    private static ApiClient getApiClient() {
-        String keyId = "10000";
-        String keySecret = "0cd526a9d3c34e588598f47e635c22f2";
-        ApiClient apiClient = new ApiClient("http://open.taskflow.cn/api/", keyId, keySecret);
-        apiClient.getTaskEngine()
-                .addWorkers(
+    private static ApiClient getLocation() throws IOException {
+        PropertiesReader reader = new PropertiesReader("taskflow_config.properties");
+        String url = reader.getProperty("taskflow.server.url", "http://localhost:8082/api");
+        String keyId = reader.getProperty("taskflow.security.client.key-id", "19242c73065");
+        String keySecret = reader.getProperty("taskflow.security.client.secret", "8153a2e9ba3c42adb1d01db91d193533");
+        String grpcHost = reader.getProperty("taskflow.grpc.host");
+        Integer grpcPort = reader.getInt("taskflow.grpc.port");
+        ApiClient apiClient = new ApiClient(url, keyId, keySecret);
+        apiClient.getTaskEngine().addWorkers(
                         new MyWorkers(),
                         new CalculatorWorkers()
                 ).initWorkerTasks()
                 .startRunningTasks();
+        if (grpcHost != null && grpcPort != null) {
+            apiClient.setUseGRPC(grpcHost, grpcPort);
+            Boolean grpcSsl = reader.getBoolean("taskflow.grpc.ssl");
+            if (grpcSsl != null) {
+                apiClient.setUseSSL(grpcSsl);
+            }
+        }
         return apiClient;
     }
 
-    private static ApiClient getLocation() {
-        String keyId = "b51d09a9fb294ee5b690c4ac1b17e6a6";
-        String keySecret = "8153a2e9ba3c42adb1d01db91d193533";
-        ApiClient apiClient = new ApiClient("http://localhost:8081/api", keyId, keySecret);
-        apiClient.getTaskEngine()
-                .addWorkers(
-                        new MyWorkers(),
-                        new CalculatorWorkers()
-                ).initWorkerTasks()
-                .startRunningTasks();
-        apiClient.setUseGRPC("localhost", 9000);
-        return apiClient;
-    }
-
-    public static void main(String[] args) {
-        ApiClient apiClient = getApiClient();
+    public static void main(String[] args) throws IOException {
+        ApiClient apiClient = getLocation();
         SimpleWorkflow workflow = new SimpleWorkflow(apiClient);
         System.out.println("注册工作流：" + workflow.register());
         String workflowId = workflow.runWorkflow();

@@ -15,7 +15,7 @@
         <dependency>
             <groupId>cn.taskflow</groupId>
             <artifactId>taskflow-sdk</artifactId>
-            <version>0.0.1-beta</version>
+            <version>0.0.2-beta</version>
         </dependency>
         <dependency>
             <groupId>cn.taskflow.sample</groupId>
