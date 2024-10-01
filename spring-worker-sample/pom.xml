@@ -4,7 +4,7 @@
     <parent>
         <groupId>cn.taskflow.sample</groupId>
         <artifactId>taskflow-sample</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>spring-worker-sample</artifactId>
     <name>${project.artifactId}</name>
@@ -19,12 +19,35 @@
         <dependency>
             <groupId>cn.taskflow</groupId>
             <artifactId>taskflow-sdk</artifactId>
-            <version>0.0.1-beta</version>
+            <version>${taskflow.version}</version>
         </dependency>
         <dependency>
             <groupId>cn.taskflow.sample</groupId>
             <artifactId>common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
