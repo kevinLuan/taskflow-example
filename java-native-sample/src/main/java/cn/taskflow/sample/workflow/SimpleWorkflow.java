@@ -49,7 +49,7 @@ public class SimpleWorkflow implements IWorkflowService {
                         .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
                         .input("b", 2)
                 ).build();
-        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
+        return apiClient.getApis().getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     public String runWorkflow() {
@@ -59,7 +59,7 @@ public class SimpleWorkflow implements IWorkflowService {
         dataMap.put("message", "Hello World");
         dataMap.put("elements", Lists.newArrayList(10, 20, 30, 40, 50));
         StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
-        return apiClient.getWorkflowClient().startWorkflow(req);
+        return apiClient.getApis().getWorkflowClient().startWorkflow(req);
     }
 
     @Override

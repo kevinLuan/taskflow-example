@@ -54,7 +54,7 @@ public class SimpleWorkflow implements IWorkflowService {
                         .input(Pair.of("a").fromTaskOutput("multiplyRef", "result"))
                         .input("b", 2))
                 .build();
-        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
+        return apiClient.getApis().getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     @Override
@@ -63,6 +63,6 @@ public class SimpleWorkflow implements IWorkflowService {
         dataMap.put("a", 100);
         dataMap.put("b", 200);
         StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
-        return apiClient.getWorkflowClient().startWorkflow(req);
+        return apiClient.getApis().getWorkflowClient().startWorkflow(req);
     }
 }

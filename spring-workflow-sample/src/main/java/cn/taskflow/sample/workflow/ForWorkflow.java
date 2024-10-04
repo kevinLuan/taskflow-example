@@ -55,7 +55,7 @@ public class ForWorkflow implements IWorkflowService {
                         .input(Pair.of("a").fromTaskOutput("addRef", "sum"))
                         .input("b", 2)
                 ).build();
-        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef,true);
+        return apiClient.getApis().getWorkflowEngine().registerWorkflow(workflowDef,true);
     }
 
     @Override
@@ -65,6 +65,6 @@ public class ForWorkflow implements IWorkflowService {
         dataMap.put("b", 200);
         dataMap.put("elements", Lists.newArrayList(10, 20, 30, 40, 50));
         StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
-        return apiClient.getWorkflowClient().startWorkflow(req);
+        return apiClient.getApis().getWorkflowClient().startWorkflow(req);
     }
 }

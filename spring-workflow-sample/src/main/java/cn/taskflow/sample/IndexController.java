@@ -17,7 +17,7 @@ public class IndexController {
 
     @PostConstruct
     public void init() {
-        log.info("Welcome to the Workflow Sample service:  http://localhost:8200/index");
+        log.info("Welcome to the Workflow Sample triggers:  http://localhost:8200/index");
     }
 
     @RequestMapping(value = {"/", "/index"})

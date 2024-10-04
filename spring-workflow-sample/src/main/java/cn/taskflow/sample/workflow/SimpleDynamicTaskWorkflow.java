@@ -46,13 +46,13 @@ public class SimpleDynamicTaskWorkflow implements IWorkflowService {
                                 .input(Pair.of("delivery").fromTaskOutput("expressDeliveryRef"))
                         )
                 ).build();
-        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
+        return apiClient.getApis().getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     @Override
     public String runWorkflow() {
         Map<String, Object> dataMap = new HashMap<>();
         StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
-        return apiClient.getWorkflowClient().startWorkflow(req);
+        return apiClient.getApis().getWorkflowClient().startWorkflow(req);
     }
 }

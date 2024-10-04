@@ -23,7 +23,7 @@ public class IndexController {
 
     @PostConstruct
     public void init() {
-        log.info("Welcome to the Worker Sample service:  http://localhost:8100/index");
+        log.info("Welcome to the Worker Sample triggers:  http://localhost:8100/index");
     }
 
     /**
@@ -33,6 +33,6 @@ public class IndexController {
      */
     @RequestMapping(value = {"/", "/index"})
     public List<TaskDefinition> index() {
-        return apiClient.getTaskEngine().getTaskDefs();
+        return apiClient.getApis().getTaskEngine().getTaskDefs();
     }
 }

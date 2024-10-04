@@ -25,7 +25,7 @@ public class MainApplication {
         String grpcHost = reader.getProperty("taskflow.grpc.host");
         Integer grpcPort = reader.getInt("taskflow.grpc.port");
         ApiClient apiClient = new ApiClient(url, keyId, keySecret);
-        apiClient.getTaskEngine().addWorkers(
+        apiClient.getApis().getTaskEngine().addWorkers(
                         new MyWorkers(),
                         new CalculatorWorkers()
                 ).initWorkerTasks()

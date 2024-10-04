@@ -83,7 +83,7 @@ public class ForkWorkflow implements IWorkflowService {
                 .addTask(new ForkJoin("forkRef", tasks))
                 .build();
 
-        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
+        return apiClient.getApis().getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     @Override
@@ -93,6 +93,6 @@ public class ForkWorkflow implements IWorkflowService {
         dataMap.put("b", 200);
         dataMap.put("msg", "Hello World!");
         StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
-        return apiClient.getWorkflowClient().startWorkflow(req);
+        return apiClient.getApis().getWorkflowClient().startWorkflow(req);
     }
 }

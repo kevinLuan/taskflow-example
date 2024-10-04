@@ -14,7 +14,7 @@ public class Utils {
         try {
             long startTime = System.currentTimeMillis();
             for (; ; ) {
-                ExecutingWorkflow workflow = apiClient.getWorkflowClient().getWorkflow(workflowId, true);
+                ExecutingWorkflow workflow = apiClient.getApis().getWorkflowClient().getWorkflow(workflowId, true);
                 if (workflow.getStatus().isTerminal()) {
                     return workflow;
                 } else {

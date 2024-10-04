@@ -67,7 +67,7 @@ public class SwitchWorkflow implements IWorkflowService {
                                 .input(Pair.of("a").fromWorkflow("a"))
                                 .input(Pair.of("b").fromWorkflow("b")))
                 ).build();
-        return apiClient.getWorkflowEngine().registerWorkflow(workflowDef, true);
+        return apiClient.getApis().getWorkflowEngine().registerWorkflow(workflowDef, true);
     }
 
     @Override
@@ -80,6 +80,6 @@ public class SwitchWorkflow implements IWorkflowService {
         //随机获取一个case
         dataMap.put("caseExpression", list.get(ThreadLocalRandom.current().nextInt(list.size())));
         StartWorkflowRequest req = StartWorkflowRequest.newBuilder().name(name).version(version).input(dataMap).build();
-        return apiClient.getWorkflowClient().startWorkflow(req);
+        return apiClient.getApis().getWorkflowClient().startWorkflow(req);
     }
 }
