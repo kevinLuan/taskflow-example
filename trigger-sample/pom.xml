@@ -9,7 +9,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <url>https://github.com/kevinLuan/taskflow-sample</url>
-    <artifactId>spring-trigger-sample</artifactId>
+    <artifactId>trigger-sample</artifactId>
     <name>${project.artifactId}</name>
     <description>The taskflow inherits from the sample program</description>
     <properties>

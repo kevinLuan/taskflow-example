@@ -34,9 +34,7 @@ public class TimerTaskTriggerService {
         request.setTriggerType(TriggerType.SCHEDULE);
         request.setName("timerTaskTrigger");
         request.setDescription("测试TimerTask调度触发器,每小时重复");
-        request.setTimerTaskTrigger(TimerTaskTrigger.newBuilder()
-                .repeatFrequency(RepeatFrequency.HOURLY)
-                .build());
+        request.setTimerTaskTrigger(TimerTaskTrigger.newSimpleType(RepeatFrequency.HOURLY));
         request.setStartTime(System.currentTimeMillis());
         request.setEndTime(DateUtils.addHours(new Date(), 5).getTime());
         request.setStartWorkflowRequest(doWhileWorkflow.getRequest());
