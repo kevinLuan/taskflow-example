@@ -19,9 +19,9 @@ import static cn.feiliu.taskflow.common.utils.TaskflowUtils.f;
 public class MainApplication {
     private static ApiClient getLocation() throws IOException {
         PropertiesReader reader = new PropertiesReader("taskflow_config.properties");
-        String url = reader.getProperty("taskflow.server.url", "http://localhost:8082/api");
-        String keyId = reader.getProperty("taskflow.security.client.key-id", "19242c73065");
-        String keySecret = reader.getProperty("taskflow.security.client.secret", "8153a2e9ba3c42adb1d01db91d193533");
+        String url = reader.getProperty("taskflow.server.url");
+        String keyId = reader.getProperty("taskflow.security.client.key-id");
+        String keySecret = reader.getProperty("taskflow.security.client.secret");
         String grpcHost = reader.getProperty("taskflow.grpc.host");
         Integer grpcPort = reader.getInt("taskflow.grpc.port");
         ApiClient apiClient = new ApiClient(url, keyId, keySecret);
