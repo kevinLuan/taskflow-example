@@ -1,48 +1,26 @@
-# taskflow sample
-
-[![Build Status](https://travis-ci.org/user/repo.svg?branch=master)](https://travis-ci.org/user/repo)
-[![Coverage Status](https://coveralls.io/repos/github/user/repo/badge.svg?branch=master)](https://coveralls.io/github/user/repo?branch=master)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-## 目录
-
-- [简介](#简介)
-- [功能](#功能)
-- [快速开始](#快速开始)
-- [贡献指南](#贡献指南)
-- [许可证](#许可证)
+taskflow sample
+=========
 
 ## 简介
-   TaskFlow 是一个工作流&任务流的编排引擎服务，旨在简化复杂任务的管理和调度。它提供了一套API接口，使得开发者能够轻松地定义、执行和监控任务流。
-   此SDK API实现的目标是在特定的编程环境中提供对 taskflow 云平台功能的访问，允许用户构建、提交和管理任务流。
-- 任务定义&发布
-- 工作流注册&发布
-- 运行及管理工作流
-- 运行任务
-- 工作流调度
+   TaskFlow 是一个工作流/任务流的编排引擎系统，旨在简化复杂任务的管理和调度，同时提供了开放API平台接入Sdk能力，使开发者能够轻松注册工作任务节点到云平台，
+   通过图形化界面拖拽方式实现工作流创建，也可以直接使用Sdk API直接来创建和管理工作流。
 
-## 工程模块
+### 功能   
+* 自定义工作任务&发布
+* 工作流注册&发布
+* 工作流运行&管理
+* 工作流触发器配置和管理
+
+### 工程模块
 ```plaintext
    +-- taskflow-sample
    |   +-- common (公共子模块)
    |   +-- java-native-sample (演示Java原生工程集成sdk)
    |   +-- spring-worker-sample (演示Spring工程的形式定义 worker 示例)
    |   +-- spring-workflow-sample (演示Spring工程的形式定义 workflow)
+   |   +-- trigger-sample  (演示工作流触发定义和管理)
 
 ```
-
-
-
-
-## 快速开始
-
-### 安装依赖
-
-确保你已经安装了以下工具:
-
-- JDK 11 或更高版本
-- Maven
-- MySQL
 
 ### 运行项目
 
@@ -52,15 +30,5 @@
  cd taskflow-sample
 ```
 
-## 贡献指南
-
-欢迎贡献！请遵循以下步骤:
-
-1. 叉分支(`git checkout -b feature/fooBar`)
-2. 提交更改(`git commit -am 'Add some fooBar'`)
-3. 推送到分支(`git push origin feature/fooBar`)
-4. 创建新的 Pull Request
-
-## 许可证
-
-本项目采用 Apache License 2.0 许可。
+### 获取 keyId 和 secret 方法
+访问官网 [任务云](http://www.taskflow.cn) 注册并登录账号，点击应用管理，创建开发者应用即可获取 keyId 和 secret。
