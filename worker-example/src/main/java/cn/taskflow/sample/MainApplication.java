@@ -14,9 +14,9 @@ import java.io.IOException;
 public class MainApplication {
     private static ApiClient getLocation() throws IOException {
         PropertiesReader reader = new PropertiesReader("taskflow_config.properties");
-        String url = reader.getProperty("taskflow.server.url");
-        String keyId = reader.getProperty("taskflow.security.client.key-id");
-        String keySecret = reader.getProperty("taskflow.security.client.secret");
+        String url = reader.getProperty("taskflow.base-url");
+        String keyId = reader.getProperty("taskflow.client.key-id");
+        String keySecret = reader.getProperty("taskflow.client.secret");
         ApiClient apiClient = new ApiClient(url, keyId, keySecret);
         apiClient.getApis().getTaskEngine().addWorkers(
                         new MyWorkers(),
