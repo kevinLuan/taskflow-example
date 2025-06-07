@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>cn.taskflow</groupId>
-            <artifactId>taskflow-sdk</artifactId>
+            <artifactId>taskflow-sdk-spring</artifactId>
             <version>${taskflow.version}</version>
         </dependency>
         <!-- spring -->
