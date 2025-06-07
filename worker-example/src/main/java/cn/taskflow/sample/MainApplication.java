@@ -1,7 +1,8 @@
 package cn.taskflow.sample;
 
 import cn.feiliu.taskflow.client.ApiClient;
-import cn.taskflow.sample.utils.PropertiesReader;
+import cn.feiliu.taskflow.utils.PropertiesReader;
+import cn.feiliu.taskflow.utils.TaskflowConfig;
 import cn.taskflow.sample.worker.CalculatorWorkers;
 import cn.taskflow.sample.worker.MyWorkers;
 import org.slf4j.Logger;
@@ -17,24 +18,17 @@ public class MainApplication {
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
     private static ApiClient getLocation() throws IOException {
-        logger.info("Initializing ApiClient...");
         PropertiesReader reader = new PropertiesReader("taskflow_config.properties");
-        String url = reader.getProperty("taskflow.base-url");
-        String keyId = reader.getProperty("taskflow.client.key-id");
-        String keySecret = reader.getProperty("taskflow.client.secret");
-        logger.info("Connecting to TaskFlow server at: {}", url);
-        ApiClient apiClient = new ApiClient(url, keyId, keySecret);
-        apiClient.getApis().getTaskEngine().addWorkers(
-                        new MyWorkers(),
-                        new CalculatorWorkers()
-                ).initWorkerTasks()
-                .startRunningTasks();
-        logger.info("ApiClient initialized successfully");
+        TaskflowConfig config = reader.toConfig();
+        ApiClient apiClient = new ApiClient(config);
+        apiClient.addWorker(
+                new MyWorkers(),
+                new CalculatorWorkers()
+        ).start();
         return apiClient;
     }
 
     public static void main(String[] args) throws IOException {
-        logger.info("Starting TaskFlow worker application...");
         ApiClient apiClient = getLocation();
         logger.info("TaskFlow worker application started successfully");
     }

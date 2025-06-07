@@ -20,7 +20,7 @@ import static cn.feiliu.common.api.utils.CommonUtils.f;
 public class MyWorkers {
     private static Logger log = LoggerFactory.getLogger(MyWorkers.class);
 
-    @WorkerTask(value = "getOrders")
+    @WorkerTask(value = "getOrders", tag = "获取订单详情", description = "演示获取订单详情节点")
     public List<Order> getOrders() {
         return DataFactory.getOrders();
     }
@@ -31,7 +31,7 @@ public class MyWorkers {
      * @param order 订单信息
      * @return
      */
-    @WorkerTask(value = "expressDelivery")
+    @WorkerTask(value = "expressDelivery", tag = "智能发货", description = "根据订单总金额智能选择快递")
     public ExpressDelivery expressDelivery(@InputParam("order") Order order) {
         String expressType = order.getTotalAmount() >= 100 ? "sfExpress" : "emsExpress";
         log.info("智能发货 订单：{},totalAmount：{}, 指派快递：{}", order.getOrderId(), order.getTotalAmount(), expressType);
@@ -50,7 +50,7 @@ public class MyWorkers {
      * @param delivery 发货信息
      * @return
      */
-    @WorkerTask(value = "sfExpress")
+    @WorkerTask(value = "sfExpress", tag = "顺丰快递", description = "模拟调用顺丰发货处理")
     public ExpressDelivery sfExpress(@InputParam("delivery") ExpressDelivery delivery) {
         String expressNumber = "SF-" + RandomStringUtils.randomNumeric(6);
         delivery.setExpressType("SF");
@@ -66,7 +66,7 @@ public class MyWorkers {
      * @param delivery 发货信息
      * @return
      */
-    @WorkerTask(value = "emsExpress")
+    @WorkerTask(value = "emsExpress", tag = "EMS快递", description = "模拟调用 EMS 发货处理")
     public ExpressDelivery emsExpress(@InputParam("delivery") ExpressDelivery delivery) {
         String expressNumber = "ems-" + RandomStringUtils.randomNumeric(6);
         delivery.setExpressType("EMS");
