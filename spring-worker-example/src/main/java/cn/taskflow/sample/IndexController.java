@@ -1,9 +1,11 @@
 package cn.taskflow.sample;
 
+import cn.feiliu.common.api.model.resp.DataResult;
 import cn.feiliu.taskflow.client.ApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
@@ -18,8 +20,8 @@ public class IndexController {
     @Autowired
     private ApiClient apiClient;
 
-    @PostConstruct
-    public void init() {
-        log.info("Welcome to the Worker Sample triggers:  http://localhost:8100/index");
+    @RequestMapping({"/index", "/"})
+    public DataResult<Object> index() {
+        return DataResult.ok("Hello world");
     }
 }
