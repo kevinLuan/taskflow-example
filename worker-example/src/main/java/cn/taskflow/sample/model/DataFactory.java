@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class DataFactory {
     static AtomicLong idGenerator = new AtomicLong(0);
-    static String json = "[" +
+    static String json = ("[" +
             "    {" +
             "        'orderId': 'ORD1234'," +
             "        'userId': 'USER001'," +
@@ -50,7 +50,7 @@ public class DataFactory {
             "            }" +
             "        ]" +
             "    }" +
-            "]";
+            "]").replace('\'','"');
 
     public static List<Order> getOrders() {
         List<Order>orders = EncoderFactory.getJsonEncoder().decodeList(json, Order.class);
