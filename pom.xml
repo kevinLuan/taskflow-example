@@ -17,7 +17,7 @@
     <url>https://github.com/kevinLuan/taskflow-example</url>
     <properties>
         <project.version>1.0.0-SNAPSHOT</project.version>
-        <taskflow.version>0.1.5-beta</taskflow.version>
+        <taskflow.version>0.1.6-beta</taskflow.version>
         <log4j2.version>2.20.0</log4j2.version>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
