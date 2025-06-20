@@ -18,9 +18,9 @@ import java.util.Map;
 public class FirstWorker {
     static Logger logger = LoggerFactory.getLogger(FirstWorker.class);
 
-    @WorkerTask(value = "hello_world", tag = "你好世界", description = "第一个 hello_world 算子节点")
+    @WorkerTask(value = "hello_world", tag = "你好世界", description = "第一个 hello_world 算子节点", open = false)
     public Map<String, Object> hello_world(@InputParam("msg") String msg) {
         logger.info("算子节点 {}, taskId:{}, input:{}", TaskContext.get().getTask().getTaskDefName(), TaskContext.get().getTaskId(), msg);
-        return MapBuilder.newBuilder().newBuilder().put("result", msg).build();
+        return MapBuilder.newBuilder().put("result", msg).build();
     }
 }
